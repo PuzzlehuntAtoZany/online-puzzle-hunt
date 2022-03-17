@@ -59,8 +59,11 @@ run-server:
 	@echo "************************************************************************"
 	make clean
 	make clean-docker
-	docker build -t server/deploy:1 .
-	docker run -p 8000:8000 -d server/deploy:1
+	docker-compose -f "docker-compose.yml" up -d --build
+
+# removed in favor of docker compose
+# docker build -t server/deploy:1 .
+# docker run -p 8000:8000 -d server/deploy:1
 
 
 # run full stack only for developing
