@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "443:8000"
+      - "80:8000"
     environment:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
