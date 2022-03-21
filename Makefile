@@ -65,6 +65,9 @@ run-server:
 # docker build -t server/deploy:1 .
 # docker run -p 8000:8000 -d server/deploy:1
 
+# fast run command
+fast-server:
+	docker-compose -f "docker-compose.yml" up -d --build
 
 # run full stack only for developing
 run-fullstack:
@@ -100,7 +103,9 @@ prepare:
 	make format-backend
 	make lint-backend
 	
-	
+# list ports in use 
+list-ports: 
+	sudo lsof -i -P -n | grep LISTEN	
 
 # output versions of all tools
 versions:
