@@ -1,3 +1,5 @@
+# set appname
+appname := online-puzzle-hunt_web
 .DEFAULT_GOAL := format
 MAKEFLAGS += --no-builtin-rules
 SHELL         := bash
@@ -73,6 +75,13 @@ fast-server:
 run-fullstack:
 	make build-frontend
 	cd backend && python3 main.py
+
+# Get Container ID
+containerID := `docker ps -q --filter "name=online-puzzle-hunt_web"`
+
+# Docker execs into the right container
+docker-exec:
+	docker exec -it $(containerID) /bin/sh
 
 # run api for developing 
 run-api:
