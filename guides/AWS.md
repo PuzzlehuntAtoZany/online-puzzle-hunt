@@ -35,6 +35,9 @@ https://docs.docker.com/engine/install/ubuntu/
 
 `sudo apt-get install docker-ce=5:20.10.13~3-0~ubuntu-focal docker-ce-cli=5:20.10.13~3-0~ubuntu-focal containerd.io`
 
+## Docker Compose: 
+`https://docs.docker.com/compose/install/`
+
 
 # HTTPS and Route 53 Setup
 
