@@ -13,6 +13,9 @@ When creating a new instance, we can follow the default steps for all items exce
 - List ports and see if things are working as expected
 - You may need to kill apache if it is running and blocking port 80 (https://www.cyberciti.biz/faq/star-stop-restart-apache2-webserver/)
 
+# Run Script to Prepare Instance
+`bash prepare-instance.sh`
+If this script fails then manually install items
 
 # AWS EC2 Setup for Ubuntu Instance
 ## Update EC2 Instance: 
