@@ -86,6 +86,11 @@ run-api:
 	@echo "************************************************************************"
 	cd backend && python3 main.py
 
+# kill apache2
+kill-apache: 
+	sudo service apache2 stop
+	make list-ports
+
 # run backend unittests
 run-backend-unittests:
 	@echo "*************************"
