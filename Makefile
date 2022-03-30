@@ -56,9 +56,9 @@ build-frontend:
 
 # full run command
 run-server:
-	@echo "************************************************************************"
-	@echo "Are you sure you pushed all changes and are ready to deploy to server??"
-	@echo "************************************************************************"
+	@echo "***********************************************"
+	@echo "Are you sure you are ready to deploy to server?"
+	@echo "***********************************************"
 	make clean
 	make clean-docker
 	docker-compose -f "docker-compose.yml" up -d --build
@@ -67,11 +67,6 @@ run-server:
 fast-server:
 	docker-compose -f "docker-compose.yml" up -d --build
 
-# run full stack only for developing
-run-fullstack:
-	make build-frontend
-	cd backend && python3 main.py
-
 # Get Container ID
 containerID := `docker ps -q --filter "name=online-puzzle-hunt_web"`
 
@@ -79,32 +74,10 @@ containerID := `docker ps -q --filter "name=online-puzzle-hunt_web"`
 docker-exec:
 	docker exec -it $(containerID) /bin/sh
 
-# run api for developing 
-run-api:
-	@echo "************************************************************************"
-	@echo "There will be a Jinja Exception on Webpages but the API will still work!"
-	@echo "************************************************************************"
-	cd backend && python3 main.py
-
 # kill apache2
 kill-apache: 
 	sudo service apache2 stop
 	make list-ports
-
-# run backend unittests
-run-backend-unittests:
-	@echo "*************************"
-	@echo "Running Backend Unittests"
-	@echo "*************************"
-	cd backend && python3 test.py
-
-
-run-frontend-selenium:
-	@echo "*************************"
-	@echo "Running frontend selenium"
-	@echo "*************************"
-	docker run -ti -v $(pwd)/selenium:/root/selenium -w /root/selenium groverhood/selenium-testing python3 test.py
-
 
 # before push
 prepare:
