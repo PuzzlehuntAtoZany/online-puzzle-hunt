@@ -4,8 +4,8 @@ echo "Preparing EC2 Ubuntu Instance"
 # update ubuntu
 sudo apt update
 sudo apt full-upgrade -y
-apt-get autoremove -y
-apt-get autoclean -y
+sudo apt-get autoremove -y
+sudo apt-get autoclean -y
 
 echo "***********************"
 echo "Installing make and git"
