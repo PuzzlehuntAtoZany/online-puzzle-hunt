@@ -63,10 +63,6 @@ run-server:
 	make clean-docker
 	docker-compose -f "docker-compose.yml" up -d --build
 
-# removed in favor of docker compose
-# docker build -t server/deploy:1 .
-# docker run -p 8000:8000 -d server/deploy:1
-
 # fast run command
 fast-server:
 	docker-compose -f "docker-compose.yml" up -d --build
@@ -105,7 +101,6 @@ run-frontend-selenium:
 	docker run -ti -v $(pwd)/selenium:/root/selenium -w /root/selenium groverhood/selenium-testing python3 test.py
 
 
-	
 # before push
 prepare:
 	make clean
