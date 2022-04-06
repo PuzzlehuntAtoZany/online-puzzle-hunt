@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 '''
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -22,7 +23,12 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'FIXME_SECRET_KEY_HERE')
+try:
+    with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets:
+        SECRET_KEY = json.load(secrets)['SECRET_KEY']
+except:
+    # run this if there is no secrets file
+    SECRET_KEY = 'FIXME_SECRET_KEY_HERE'
 
 RECAPTCHA_SITEKEY = None
 RECAPTCHA_SECRETKEY = None
@@ -30,7 +36,9 @@ RECAPTCHA_SECRETKEY = None
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost',
+                 '127.0.0.1',
+                 '.onlinepuzzlehunt.com']
 
 # Application definition
 
@@ -159,7 +167,7 @@ EMAIL_HOST_USER = 'FIXME'
 EMAIL_HOST_PASSWORD = 'FIXME'
 EMAIL_PORT = 'FIXME'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_SUBJECT_PREFIX = '[FIXME Puzzle Hunt] '
+EMAIL_SUBJECT_PREFIX = '[Online Puzzle Hunt] '
 
 # https://docs.djangoproject.com/en/3.1/topics/logging/
 
