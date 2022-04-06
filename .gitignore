@@ -29,3 +29,9 @@ dump.rdb
 \.vscode/
 
 /logs/*.log
+
+# Need this to run server
+secrets.json
+# follow guide to make these pem files 
+cert.pem
+key.pem
