@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = os.getenv('DJANGO_DEBUG', False)
+DEBUG = True
 
 IS_TEST = True
 

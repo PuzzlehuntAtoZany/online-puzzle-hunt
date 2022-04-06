@@ -26,16 +26,10 @@ start-pgadmin:
     -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
     -d dpage/pgadmin4
 
-# get python files 
-SFILES := `find backend -name "*.py"`
-
 # housekeeping
 clean:
 	-rm -f  *.tmp
 	-make remove-pycache
-	-rm -rf frontend/build
-	-rm -rf frontend/node_modules
-	-rm frontend/package-lock.json
 
 remove-pycache:
 	find . -type d -name __pycache__ -exec rm -r {} \+
@@ -43,16 +37,18 @@ remove-pycache:
 clean-docker:
 	-bash docker-rm.sh
 
+# get python files 
+GPHFILES := `find gph -name "*.py"`
+PFILES := `find puzzles -name "*.py"`
+
 # backend commands
 format-backend:
-	@for name in $(SFILES); do $(BLACK) $$name; done
+	@for name in $(GPHFILES); do $(BLACK) $$name; done
+	@for name in $(PFILES); do $(BLACK) $$name; done
 
 lint-backend:
-	@for name in $(SFILES); do $(PYLINT) $$name; done
-
-# frontend commands
-build-frontend:
-	cd frontend && npm install && npm run build
+	@for name in $(GPHFILES); do $(PYLINT) $$name; done
+	@for name in $(PFILES); do $(PYLINT) $$name; done
 
 # full run command
 run-server:
@@ -87,7 +83,17 @@ prepare:
 	
 # list ports in use 
 list-ports: 
-	sudo lsof -i -P -n | grep LISTEN	
+	sudo lsof -i -P -n | grep LISTEN
+
+# get local SSL Files 
+local-ssl:
+	brew install mkcert
+	mkcert -install
+	mkcert -cert-file cert.pem -key-file key.pem localhost 127.0.0.1
+
+# run locally with ssl
+run-local:
+	python manage.py runsslserver --certificate cert.pem --key key.pem
 
 # output versions of all tools
 versions:

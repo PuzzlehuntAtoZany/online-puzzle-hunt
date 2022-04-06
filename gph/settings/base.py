@@ -57,10 +57,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'django_extensions',
     'impersonate',
     'mathfilters',
     'channels',
     'puzzles',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
