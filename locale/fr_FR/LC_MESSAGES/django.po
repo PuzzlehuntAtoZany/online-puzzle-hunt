@@ -1993,8 +1993,8 @@ msgstr ""
 #: puzzles/templates/registration_email.txt:3
 #, python-format
 msgid ""
-"You have successfully registered team %(team_name)s for the %(hunt_title)s."
-msgstr "Vous avez bien inscrit l'équipe %(team_name)s pour %(hunt_title)s."
+"You have successfully registered team %(team_name)s for %(hunt_title)s."
+msgstr "Vous avez bien inscrit l'équipe %(team_name)s %(hunt_title)s."
 
 #: puzzles/templates/registration_email.html:4
 #, python-format
