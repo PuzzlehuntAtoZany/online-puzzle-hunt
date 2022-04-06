@@ -31,11 +31,24 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='hint',
             name='status',
-            field=models.CharField(choices=[('NR', 'No response'), ('ANS', 'Answered'), ('REF', 'Refunded'), ('OBS', 'Obsolete')], default='NR', max_length=3),
+            field=models.CharField(
+                choices=[
+                    ('NR', 'No response'),
+                    ('ANS', 'Answered'),
+                    ('REF', 'Refunded'),
+                    ('OBS', 'Obsolete'),
+                ],
+                default='NR',
+                max_length=3,
+            ),
         ),
         migrations.AlterField(
             model_name='puzzle',
             name='body_template',
-            field=models.CharField(blank=True, help_text='File name of a Django template (including .html) under\n        puzzle_bodies and solution_bodies containing the puzzle and\n        solution content, respectively. Defaults to slug + ".html" if not\n        specified.', max_length=500),
+            field=models.CharField(
+                blank=True,
+                help_text='File name of a Django template (including .html) under\n        puzzle_bodies and solution_bodies containing the puzzle and\n        solution content, respectively. Defaults to slug + ".html" if not\n        specified.',
+                max_length=500,
+            ),
         ),
     ]

@@ -16,13 +16,16 @@ from puzzles.models import (
 def looks_spammy(s):
     return re.search('https?://', s, re.IGNORECASE) is not None
 
+
 class RegisterForm(forms.Form):
     team_id = forms.CharField(
         label=_('Team Username'),
         max_length=100,
         help_text=(
-            _('This is the private username your team will use when logging in. '
-            'It should be short and not contain special characters.')
+            _(
+                'This is the private username your team will use when logging in. '
+                'It should be short and not contain special characters.'
+            )
         ),
     )
     team_name = forms.CharField(
@@ -50,25 +53,22 @@ class RegisterForm(forms.Form):
         team_name = cleaned_data.get('team_name')
 
         if looks_spammy(team_name):
-            raise forms.ValidationError(
-                _('That public team name isn’t allowed.')
-            )
+            raise forms.ValidationError(_('That public team name isn’t allowed.'))
 
         if password != password2:
-            raise forms.ValidationError(
-                _('Passwords don’t match.')
-            )
+            raise forms.ValidationError(_('Passwords don’t match.'))
 
         if User.objects.filter(username=team_id).exists():
             raise forms.ValidationError(
-                _('That login username has already been taken by a different '
-                'team.')
+                _('That login username has already been taken by a different ' 'team.')
             )
 
         if Team.objects.filter(team_name=team_name).exists():
             raise forms.ValidationError(
-                _('That public team name has already been taken by a different '
-                'team.')
+                _(
+                    'That public team name has already been taken by a different '
+                    'team.'
+                )
             )
 
         return cleaned_data
@@ -77,9 +77,12 @@ class RegisterForm(forms.Form):
 def validate_team_member_email_unique(email):
     if TeamMember.objects.filter(email=email).exists():
         raise forms.ValidationError(
-            _('Someone with that email is already registered as a member on a '
-            'different team.')
+            _(
+                'Someone with that email is already registered as a member on a '
+                'different team.'
+            )
         )
+
 
 class TeamMemberForm(forms.Form):
     name = forms.CharField(label=_('Name (required)'), max_length=200)
@@ -108,11 +111,13 @@ def validate_team_emails(formset):
         raise forms.ValidationError(_('All team members must have unique emails.'))
     return emails
 
+
 class TeamMemberFormset(forms.BaseFormSet):
     def clean(self):
         if any(self.errors):
             return
         validate_team_emails(self)
+
 
 class TeamMemberModelFormset(forms.models.BaseModelFormSet):
     def clean(self):
@@ -120,8 +125,7 @@ class TeamMemberModelFormset(forms.models.BaseModelFormSet):
             return
         emails = validate_team_emails(self)
         if (
-            TeamMember.objects
-            .exclude(team=self.data['team'])
+            TeamMember.objects.exclude(team=self.data['team'])
             .filter(email__in=emails)
             .exists()
         ):
@@ -140,10 +144,12 @@ class SubmitAnswerForm(forms.Form):
 class RequestHintForm(forms.Form):
     hint_question = forms.CharField(
         label=(
-            _('Describe everything you’ve tried on this puzzle. We will '
-            'provide a hint to help you move forward. The more detail you '
-            'provide, the less likely it is that we’ll tell you '
-            'something you already know.')
+            _(
+                'Describe everything you’ve tried on this puzzle. We will '
+                'provide a hint to help you move forward. The more detail you '
+                'provide, the less likely it is that we’ll tell you '
+                'something you already know.'
+            )
         ),
         widget=forms.Textarea,
     )
@@ -154,7 +160,7 @@ class RequestHintForm(forms.Form):
         notif_choices.extend(team.get_emails(with_names=True))
         self.fields['notify_emails'] = forms.ChoiceField(
             label=_('When the hint is answered, send an email to:'),
-            choices=notif_choices
+            choices=notif_choices,
         )
 
 
@@ -163,22 +169,27 @@ class HintStatusWidget(forms.Select):
         self.choices = []
         for (option, desc) in Hint.STATUSES:
             if option == Hint.NO_RESPONSE:
-                if value != Hint.NO_RESPONSE: continue
+                if value != Hint.NO_RESPONSE:
+                    continue
             elif option == Hint.ANSWERED:
-                if value == Hint.OBSOLETE: continue
+                if value == Hint.OBSOLETE:
+                    continue
                 if self.is_followup:
                     desc += _(' (as followup)')
             elif option == Hint.REFUNDED:
-                if value == Hint.OBSOLETE: continue
+                if value == Hint.OBSOLETE:
+                    continue
                 if self.is_followup:
                     desc += _(' (thread closed)')
             elif option == Hint.OBSOLETE:
-                if value != Hint.OBSOLETE: continue
+                if value != Hint.OBSOLETE:
+                    continue
             self.choices.append((option, desc))
         if value == Hint.NO_RESPONSE:
             value = Hint.ANSWERED
             attrs['style'] = 'background-color: #ff3'
         return super(HintStatusWidget, self).get_context(name, value, attrs)
+
 
 class AnswerHintForm(forms.ModelForm):
     class Meta:

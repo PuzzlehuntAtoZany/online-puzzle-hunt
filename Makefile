@@ -43,8 +43,8 @@ PFILES := `find puzzles -name "*.py"`
 
 # backend commands
 format-backend:
-	@for name in $(GPHFILES); do $(BLACK) $$name; done
-	@for name in $(PFILES); do $(BLACK) $$name; done
+	@for name in $(GPHFILES); do $(BLACK) $$name --skip-string-normalization; done
+	@for name in $(PFILES); do $(BLACK) $$name --skip-string-normalization; done
 
 lint-backend:
 	@for name in $(GPHFILES); do $(PYLINT) $$name; done

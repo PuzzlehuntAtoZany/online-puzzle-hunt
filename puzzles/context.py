@@ -21,14 +21,18 @@ def context_middleware(get_response):
     def middleware(request):
         request.context = Context(request)
         return get_response(request)
+
     return middleware
+
 
 # A context processor takes a request and returns a dictionary of (key: value)s
 # to merge into the request's context.
 def context_processor(request):
     def thunk(name):
         return lambda: getattr(request.context, name)
+
     return {name: thunk(name) for name in request.context._cached_names}
+
 
 # Construct a get/set property from a name and a function to compute a value.
 # Doing this with name="foo" causes accesses to self.foo to call fn and cache
@@ -40,11 +44,14 @@ def wrap_cacheable(name, fn):
         if name not in self._cache:
             self._cache[name] = fn(self)
         return self._cache[name]
+
     def fset(self, value):
         if not hasattr(self, '_cache'):
             self._cache = {}
         self._cache[name] = value
+
     return property(fget, fset)
+
 
 # Decorator for a class, like the `Context` class below but also the `Team`
 # model, that replaces all non-special methods that take no arguments other
@@ -55,9 +62,9 @@ def context_cache(cls):
     for c in (BaseContext, cls):
         for name, fn in c.__dict__.items():
             if (
-                not name.startswith('__') and
-                isinstance(fn, types.FunctionType) and
-                inspect.getfullargspec(fn).args == ['self']
+                not name.startswith('__')
+                and isinstance(fn, types.FunctionType)
+                and inspect.getfullargspec(fn).args == ['self']
             ):
                 setattr(cls, name, wrap_cacheable(name, fn))
                 cached_names.append(name)
@@ -82,7 +89,9 @@ class BaseContext:
         return timezone.localtime()
 
     def start_time(self):
-        return HUNT_START_TIME - self.team.start_offset if self.team else HUNT_START_TIME
+        return (
+            HUNT_START_TIME - self.team.start_offset if self.team else HUNT_START_TIME
+        )
 
     def end_time(self):
         return HUNT_END_TIME
@@ -108,14 +117,21 @@ class BaseContext:
     def hunt_is_closed(self):
         return self.now >= self.close_time
 
+
 # Also include the constants from hunt_config.
 for (key, value) in hunt_config.__dict__.items():
-    if key.isupper() and key not in ('HUNT_START_TIME', 'HUNT_END_TIME', 'HUNT_CLOSE_TIME'):
+    if key.isupper() and key not in (
+        'HUNT_START_TIME',
+        'HUNT_END_TIME',
+        'HUNT_CLOSE_TIME',
+    ):
         (lambda v: setattr(BaseContext, key.lower(), lambda self: v))(value)
 
 # Also include select constants from settings.
 for key in ('RECAPTCHA_SITEKEY', 'GA_CODE', 'DOMAIN'):
-    (lambda v: setattr(BaseContext, key.lower(), lambda self: v))(getattr(settings, key))
+    (lambda v: setattr(BaseContext, key.lower(), lambda self: v))(
+        getattr(settings, key)
+    )
 
 
 # The properties of a request Context are accessible both from views and from
@@ -148,16 +164,24 @@ class Context:
         return models.Team.compute_unlocks(self)
 
     def all_puzzles(self):
-        return tuple(models.Puzzle.objects.select_related('round').order_by('round__order', 'order'))
+        return tuple(
+            models.Puzzle.objects.select_related('round').order_by(
+                'round__order', 'order'
+            )
+        )
 
     def unclaimed_hints(self):
-        return models.Hint.objects.filter(status=models.Hint.NO_RESPONSE, claimer='').count()
+        return models.Hint.objects.filter(
+            status=models.Hint.NO_RESPONSE, claimer=''
+        ).count()
 
     def visible_errata(self):
         return models.Erratum.get_visible_errata(self)
 
     def errata_page_visible(self):
-        return self.is_superuser or any(erratum.updates_text for erratum in self.visible_errata)
+        return self.is_superuser or any(
+            erratum.updates_text for erratum in self.visible_errata
+        )
 
     def puzzle(self):
         return None  # set by validate_puzzle

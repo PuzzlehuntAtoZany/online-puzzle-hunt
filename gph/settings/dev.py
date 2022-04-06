@@ -19,8 +19,8 @@ CACHES = {
 }
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     }
 }
 
@@ -31,9 +31,7 @@ LOGGING = {
         'django-file': {
             'format': '%(asctime)s [%(levelname)s] %(module)s\n%(message)s'
         },
-        'puzzles-file': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s %(message)s'
-        },
+        'puzzles-file': {'format': '%(asctime)s [%(levelname)s] %(name)s %(message)s'},
         'django-console': {
             'format': '\033[34;1m%(asctime)s \033[35;1m[%(levelname)s] \033[34;1m%(module)s\033[0m\n%(message)s'
         },

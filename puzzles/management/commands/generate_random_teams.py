@@ -11,13 +11,18 @@ from unittest import mock
 import random
 
 # for flavor, and to test unicode // http://racepics.weihwa.com/
-emoji = "💥💫🐒🦍🐕🐺🦊🐈🦁🐅🐆🐎🦄🦌🐂🐃🐄🐖🐗🐏🐑🐐🐪🐘🦏🐁🐀🐹🐇🐿🦇🐻🐨🐼🐾🦃🐔🐓🐤🐦🐧🕊🦅🦆🦉🐸🐊🐢🦎🐍🐉🐳🐋🐬🐟🐠🐡🦈🐙🐚🐌🦋🐛🐜🐝🐞🕷🕸🦂💐🌸💮🌹🌺🌻🌼🌷🌱🌲🌳🌴🌵🌾🌿☘🍀🍁🍃🍄🌰🦀🦐🦑🌐🌙⭐🌈⚡🔥🌊✨🎮🎲🧩♟🎭🎨🧵🎤🎧🎷🎸🎹🎺🎻🥁🎬🏹🌋🏖🏜🏝🏠🏤🏥🏦🏫🌃🏙🌅🌇🚆🚌🚕🚗🚲⚓✈🚁🚀🛸🎆"
-adjectives = "Alien Alpha Aquatic Avian Bio-Hazard Blaster Comet Contact Deep-Space Deficit Deserted Destroyed Distant Empath Epsilon Expanding Expedition Galactic Gambling Gem Genetics Interstellar Lost Malevolent Military Mining Mining New Old Outlaw Pan-Galactic Pilgrimage Pirate Plague Pre-Sentient Prosperous Public Radioactive Rebel Replicant Reptilian Research Scout Terraformed Terraforming Uplift".split()
-nouns = "Alliance Bankers Base Battle Bazaar Cache Center Code Colony Consortium Developers Earth Economy Engineers Exchange Factory Federation Fleet Fortress Guild Imperium Institute Lab Lair League Lifeforms Mercenaries Monolith Order Outpost Pact Port Program Project Prospectors Renaissance Repository Resort Robots Shop Sparta Stronghold Studios Survey Symbionts Sympathizers Technology Trendsetters Troops Warlord Warship World".split()
-wrong_answers = [x + y for x in ["RED", "WRONG", "INCORRECT"] for y in ["", "ANSWER", "SOLUTION", "HERRING"]]
+emoji = '💥💫🐒🦍🐕🐺🦊🐈🦁🐅🐆🐎🦄🦌🐂🐃🐄🐖🐗🐏🐑🐐🐪🐘🦏🐁🐀🐹🐇🐿🦇🐻🐨🐼🐾🦃🐔🐓🐤🐦🐧🕊🦅🦆🦉🐸🐊🐢🦎🐍🐉🐳🐋🐬🐟🐠🐡🦈🐙🐚🐌🦋🐛🐜🐝🐞🕷🕸🦂💐🌸💮🌹🌺🌻🌼🌷🌱🌲🌳🌴🌵🌾🌿☘🍀🍁🍃🍄🌰🦀🦐🦑🌐🌙⭐🌈⚡🔥🌊✨🎮🎲🧩♟🎭🎨🧵🎤🎧🎷🎸🎹🎺🎻🥁🎬🏹🌋🏖🏜🏝🏠🏤🏥🏦🏫🌃🏙🌅🌇🚆🚌🚕🚗🚲⚓✈🚁🚀🛸🎆'
+adjectives = 'Alien Alpha Aquatic Avian Bio-Hazard Blaster Comet Contact Deep-Space Deficit Deserted Destroyed Distant Empath Epsilon Expanding Expedition Galactic Gambling Gem Genetics Interstellar Lost Malevolent Military Mining Mining New Old Outlaw Pan-Galactic Pilgrimage Pirate Plague Pre-Sentient Prosperous Public Radioactive Rebel Replicant Reptilian Research Scout Terraformed Terraforming Uplift'.split()
+nouns = 'Alliance Bankers Base Battle Bazaar Cache Center Code Colony Consortium Developers Earth Economy Engineers Exchange Factory Federation Fleet Fortress Guild Imperium Institute Lab Lair League Lifeforms Mercenaries Monolith Order Outpost Pact Port Program Project Prospectors Renaissance Repository Resort Robots Shop Sparta Stronghold Studios Survey Symbionts Sympathizers Technology Trendsetters Troops Warlord Warship World'.split()
+wrong_answers = [
+    x + y
+    for x in ['RED', 'WRONG', 'INCORRECT']
+    for y in ['', 'ANSWER', 'SOLUTION', 'HERRING']
+]
+
 
 def random_team_name():
-    return "{}{}{} {} {} {}{}{}".format(
+    return '{}{}{} {} {} {}{}{}'.format(
         random.choice(emoji),
         random.choice(emoji),
         random.choice(emoji),
@@ -28,14 +33,17 @@ def random_team_name():
         random.choice(emoji),
     )
 
+
 def random_datetime_since(start):
     now = timezone.make_aware(datetime.now())
-    if start > now: return now
+    if start > now:
+        return now
 
     delta = now - start
     ret = start + timedelta(seconds=random.randint(0, int(delta.total_seconds())))
     print(start, now, delta, ret)
     return ret
+
 
 class Command(BaseCommand):
     help = 'Randomly generate n teams for testing, complete with solves and surveys'
@@ -51,12 +59,12 @@ class Command(BaseCommand):
         n = options['num_teams'][0]
         teams = []
         for i in range(n):
-            username = 'team{}'.format(random.randint(0,10**10))
+            username = 'team{}'.format(random.randint(0, 10**10))
 
             user = User.objects.create_user(
-                username=username, email=username + "@example.com", password="password"
+                username=username, email=username + '@example.com', password='password'
             )
-            with mock.patch("django.utils.timezone.now") as mock_now:
+            with mock.patch('django.utils.timezone.now') as mock_now:
                 mock_now.return_value = random_datetime_since(HUNT_START_TIME)
                 team = Team(
                     user=user,
@@ -74,7 +82,8 @@ class Command(BaseCommand):
             for team, team_rating in teams:
                 success_prob = team_rating - puzzle_rating
 
-                if success_prob < 0: continue
+                if success_prob < 0:
+                    continue
 
                 cur_time = team.creation_time
 
@@ -82,7 +91,7 @@ class Command(BaseCommand):
                     if random.random() < success_prob:
                         break
                     cur_time = random_datetime_since(cur_time)
-                    with mock.patch("django.utils.timezone.now") as mock_now:
+                    with mock.patch('django.utils.timezone.now') as mock_now:
                         mock_now.return_value = cur_time
                         AnswerSubmission(
                             team=team,
@@ -94,7 +103,7 @@ class Command(BaseCommand):
 
                 if random.random() < success_prob:
                     cur_time = random_datetime_since(cur_time)
-                    with mock.patch("django.utils.timezone.now") as mock_now:
+                    with mock.patch('django.utils.timezone.now') as mock_now:
                         mock_now.return_value = cur_time
                         AnswerSubmission(
                             team=team,

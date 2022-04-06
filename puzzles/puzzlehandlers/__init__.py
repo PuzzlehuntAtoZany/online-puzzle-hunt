@@ -16,28 +16,37 @@ def reverse_proxy_middleware(get_response):
         if 'REMOTE_ADDR' not in request.META and 'HTTP_X_REAL_IP' in request.META:
             request.META['REMOTE_ADDR'] = request.META['HTTP_X_REAL_IP']
         return get_response(request)
+
     return process_request
 
 
 def simple_ratelimit(handler, rate):
     'A handler that silently drops requests over the rate limit.'
+
     @require_POST
     @ratelimit(key='user_or_ip', rate=rate, block=True)
     @wraps(handler)
     def rate_limiter(request):
         return HttpResponse(handler(request))
+
     return rate_limiter
+
 
 # Usage: mypuzzle_submit = simple_ratelimit(mypuzzle.submit, '10/s')
 # See https://django-ratelimit.readthedocs.io/en/stable/rates.html for the rate
 # limit string.
 
+
 def check_ratelimit(request, rate):
     data = get_usage_count(request, group=request.path, rate=rate, key='user_or_ip')
     return data['count'] >= data['limit']
 
+
 def update_ratelimit(request, rate):
-    get_usage_count(request, group=request.path, rate=rate, key='user_or_ip', increment=True)
+    get_usage_count(
+        request, group=request.path, rate=rate, key='user_or_ip', increment=True
+    )
+
 
 def error_ratelimit(handler, rate, error, check_response=None, encode_response=None):
     '''
@@ -57,6 +66,7 @@ def error_ratelimit(handler, rate, error, check_response=None, encode_response=N
     for example use Python dicts for error, handler, and check_response, while
     still serializing to JSON in the end.
     '''
+
     @require_POST
     @wraps(handler)
     def rate_limiter(request):
@@ -72,8 +82,17 @@ def error_ratelimit(handler, rate, error, check_response=None, encode_response=N
         if encode_response is not None:
             response = encode_response(response)
         return HttpResponse(response)
+
     return rate_limiter
+
 
 # Example usage:
 from . import interactive_demo
-interactive_demo_submit = error_ratelimit(interactive_demo.submit, '2/m', {'error': 'Please limit your attempts to two per minute.'}, lambda response: response['correct'], json.dumps)
+
+interactive_demo_submit = error_ratelimit(
+    interactive_demo.submit,
+    '2/m',
+    {'error': 'Please limit your attempts to two per minute.'},
+    lambda response: response['correct'],
+    json.dumps,
+)

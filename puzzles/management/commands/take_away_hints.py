@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from puzzles.models import Team, Hint
 
+
 class Command(BaseCommand):
     help = 'Takes away all unused hints from teams'
 
