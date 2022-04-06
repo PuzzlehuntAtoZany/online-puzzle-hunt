@@ -29,3 +29,6 @@ dump.rdb
 \.vscode/
 
 /logs/*.log
+
+# Need this to run server
+secrets.json
