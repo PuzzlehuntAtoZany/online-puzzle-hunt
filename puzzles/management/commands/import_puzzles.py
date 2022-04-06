@@ -14,6 +14,7 @@ tables = (
     models.Hint,
 )
 
+
 class Command(BaseCommand):
     help = 'Create rounds and puzzles from a TSV'
 
@@ -23,8 +24,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.ERROR('These will be deleted:'))
         for model in tables:
-            self.stdout.write(self.style.WARNING('%d %s' %
-                (model.objects.count(), model.__name__)))
+            self.stdout.write(
+                self.style.WARNING('%d %s' % (model.objects.count(), model.__name__))
+            )
         input(self.style.ERROR('Enter to continue: '))
         for model in tables:
             model.objects.all().delete()
@@ -33,8 +35,16 @@ class Command(BaseCommand):
         puzzle_counter = 0
         round = None
         for line in open(options['filename'][0]):
-            (round_title, title, slug, emoji, answer, unlock_hours,
-                unlock_global, unlock_local) = line.strip('\n').split('\t')[:8]
+            (
+                round_title,
+                title,
+                slug,
+                emoji,
+                answer,
+                unlock_hours,
+                unlock_global,
+                unlock_local,
+            ) = line.strip('\n').split('\t')[:8]
             if round_title:
                 round_counter += 1
                 puzzle_counter = 0
@@ -56,9 +66,12 @@ class Command(BaseCommand):
                 is_meta=is_meta,
                 emoji=emoji or ':question:',
             )
-            if unlock_hours: puzzle.unlock_hours = int(unlock_hours)
-            if unlock_global: puzzle.unlock_global = int(unlock_global)
-            if unlock_local: puzzle.unlock_local = int(unlock_local)
+            if unlock_hours:
+                puzzle.unlock_hours = int(unlock_hours)
+            if unlock_global:
+                puzzle.unlock_global = int(unlock_global)
+            if unlock_local:
+                puzzle.unlock_local = int(unlock_local)
             puzzle.clean()
             puzzle.save()
             if is_meta:

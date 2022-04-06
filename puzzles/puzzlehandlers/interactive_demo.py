@@ -3,9 +3,10 @@ import json
 from django.views.decorators.http import require_POST
 from puzzles.messaging import log_puzzle_info
 
+
 @require_POST
 def submit(request):
-    "A crude example of an interactive puzzle handler."
+    'A crude example of an interactive puzzle handler.'
 
     # Note that this example handler is completely stateless; it doesn't
     # remember anything about past interactions or requests. Some ways to add
@@ -54,15 +55,15 @@ def submit(request):
                 'correct': False,
             }
         # (This is buggy, can you see why?)
-        correct = "INTERACTIVE"[index-1] == guess
+        correct = 'INTERACTIVE'[index - 1] == guess
 
         # Purely optional logging. You might use this to gather statistics
         # about how often teams interacted with the puzzle in some specific
         # way.
         if correct:
             team = request.context.team
-            name = team.team_name if team else "<noname>"
-            log_puzzle_info("Interactive Demo", name, f"Guessed {index} correctly")
+            name = team.team_name if team else '<noname>'
+            log_puzzle_info('Interactive Demo', name, f'Guessed {index} correctly')
 
         return {'correct': correct}
     except (KeyError, AttributeError):

@@ -36,9 +36,7 @@ RECAPTCHA_SECRETKEY = None
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.localhost',
-                 '127.0.0.1',
-                 '.onlinepuzzlehunt.com']
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '.onlinepuzzlehunt.com']
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
@@ -82,20 +80,20 @@ MIDDLEWARE = [
 ]
 
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
     }
 }
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [{'address':('127.0.0.1', 6379), 'db': 2}],
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [{'address': ('127.0.0.1', 6379), 'db': 2}],
         },
     }
 }
@@ -141,16 +139,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us' #FIXME
+LANGUAGE_CODE = 'en-us'  # FIXME
 
-TIME_ZONE = 'America/New_York' #FIXME
+TIME_ZONE = 'America/New_York'  # FIXME
 
 USE_I18N = True
 
@@ -166,7 +163,9 @@ FORMAT_MODULE_PATH = ['gph.formats']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'static'))
-SOLUTION_STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'puzzles/templates/solution_bodies'))
+SOLUTION_STATIC_ROOT = os.path.normpath(
+    os.path.join(BASE_DIR, 'puzzles/templates/solution_bodies')
+)
 STATICFILES_STORAGE = 'gph.storage.CustomStorage'
 
 # Email SMTP information
@@ -201,12 +200,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'django': {
-            'format': '%(asctime)s [%(levelname)s] %(module)s\n%(message)s'
-        },
-        'puzzles': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s %(message)s'
-        },
+        'django': {'format': '%(asctime)s [%(levelname)s] %(module)s\n%(message)s'},
+        'puzzles': {'format': '%(asctime)s [%(levelname)s] %(name)s %(message)s'},
     },
     # FIXME you may want to change the filenames to something like
     # /srv/logs/django.log or similar

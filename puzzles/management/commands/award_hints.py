@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from puzzles.models import Team
 
+
 class Command(BaseCommand):
     help = 'Awards all teams a certain number of hints'
 

@@ -61,29 +61,45 @@ def dispatch_discord_alert(webhook, content, username):
     logger.info(_('(Real) Discord alert:\n') + content)
     requests.post(webhook, data={'username': username, 'content': content})
 
+
 def dispatch_general_alert(content):
     dispatch_discord_alert(ALERT_WEBHOOK_URL, content, ALERT_DISCORD_USERNAME)
 
+
 def dispatch_submission_alert(content, correct):
-    username = CORRECT_SUBMISSION_DISCORD_USERNAME if correct else INCORRECT_SUBMISSION_DISCORD_USERNAME
+    username = (
+        CORRECT_SUBMISSION_DISCORD_USERNAME
+        if correct
+        else INCORRECT_SUBMISSION_DISCORD_USERNAME
+    )
     dispatch_discord_alert(SUBMISSION_WEBHOOK_URL, content, username)
 
+
 def dispatch_free_answer_alert(content):
-    dispatch_discord_alert(FREE_ANSWER_WEBHOOK_URL, content, FREE_ANSWER_DISCORD_USERNAME)
+    dispatch_discord_alert(
+        FREE_ANSWER_WEBHOOK_URL, content, FREE_ANSWER_DISCORD_USERNAME
+    )
+
 
 def dispatch_victory_alert(content):
     dispatch_discord_alert(VICTORY_WEBHOOK_URL, content, VICTORY_DISCORD_USERNAME)
 
 
 puzzle_logger = logging.getLogger('puzzles.puzzle')
+
+
 def log_puzzle_info(puzzle, team, content):
     puzzle_logger.info('{}\t{}\t{}'.format(puzzle, team, content))
 
+
 request_logger = logging.getLogger('puzzles.request')
+
+
 def log_request_middleware(get_response):
     def middleware(request):
         request_logger.info('{} {}'.format(request.get_full_path(), request.user))
         return get_response(request)
+
     return middleware
 
 
@@ -100,8 +116,11 @@ def send_mail_wrapper(subject, template, context, recipients):
     subject = settings.EMAIL_SUBJECT_PREFIX + subject
     body = render_to_string(template + '.txt', context)
     if settings.IS_TEST:
-        logger.info(_('Sending mail <{}> to <{}>:\n{}').format(
-            subject, ', '.join(recipients), body))
+        logger.info(
+            _('Sending mail <{}> to <{}>:\n{}').format(
+                subject, ', '.join(recipients), body
+            )
+        )
         return
     mail = EmailMultiAlternatives(
         subject=subject,
@@ -109,13 +128,17 @@ def send_mail_wrapper(subject, template, context, recipients):
         from_email=MESSAGING_SENDER_EMAIL,
         to=recipients,
         alternatives=[(render_to_string(template + '.html', context), 'text/html')],
-        reply_to=[CONTACT_EMAIL])
+        reply_to=[CONTACT_EMAIL],
+    )
     try:
         if mail.send() != 1:
             raise RuntimeError(_('Unknown failure???'))
     except Exception:
-        dispatch_general_alert(_('Could not send mail <{}> to <{}>:\n{}').format(
-            subject, ', '.join(recipients), traceback.format_exc()))
+        dispatch_general_alert(
+            _('Could not send mail <{}> to <{}>:\n{}').format(
+                subject, ', '.join(recipients), traceback.format_exc()
+            )
+        )
 
 
 # Set to this to delete an embed from a message. (None doesn't work; that's
@@ -125,8 +148,9 @@ class EmptyEmbed:
     def to_dict(self):
         return {}
 
+
 class DiscordInterface:
-    TOKEN = None # FIXME a long token from Discord
+    TOKEN = None  # FIXME a long token from Discord
 
     # the next two should be big decimal numbers; in Discord, you can right
     # click and Copy ID to get them
@@ -174,20 +198,28 @@ class DiscordInterface:
     # Client(ClientConfig({'token': TOKEN})).run_forever()
 
     def update_hint(self, hint):
-        HintsConsumer.send_to_all(json.dumps({'id': hint.id,
-            'content': render_to_string('hint_list_entry.html', {
-                'hint': hint, 'now': timezone.localtime()})}))
+        HintsConsumer.send_to_all(
+            json.dumps(
+                {
+                    'id': hint.id,
+                    'content': render_to_string(
+                        'hint_list_entry.html',
+                        {'hint': hint, 'now': timezone.localtime()},
+                    ),
+                }
+            )
+        )
         embed = MessageEmbed()
         embed.author.url = hint.full_url()
         if hint.claimed_datetime:
-            embed.color = 0xdddddd
+            embed.color = 0xDDDDDD
             embed.timestamp = hint.claimed_datetime.isoformat()
             embed.author.name = _('Claimed by {}').format(hint.claimer)
             if hint.claimer in self.get_avatars():
                 embed.author.icon_url = self.get_avatars()[hint.claimer]
             debug = _('claimed by {}').format(hint.claimer)
         else:
-            embed.color = 0xff00ff
+            embed.color = 0xFF00FF
             embed.author.name = _('U N C L A I M E D')
             claim_url = hint.full_url(claim=True)
             embed.title = _('Claim: ') + claim_url
@@ -201,18 +233,22 @@ class DiscordInterface:
         elif hint.discord_id:
             try:
                 self.client.channels_messages_modify(
-                    self.HINT_CHANNEL, hint.discord_id, embed=embed)
+                    self.HINT_CHANNEL, hint.discord_id, embed=embed
+                )
             except Exception:
-                dispatch_general_alert(_('Discord API failure: modify\n{}').format(
-                    traceback.format_exc()))
+                dispatch_general_alert(
+                    _('Discord API failure: modify\n{}').format(traceback.format_exc())
+                )
         else:
             message = hint.long_discord_message()
             try:
                 discord_id = self.client.channels_messages_create(
-                    self.HINT_CHANNEL, message, embed=embed).id
+                    self.HINT_CHANNEL, message, embed=embed
+                ).id
             except Exception:
-                dispatch_general_alert(_('Discord API failure: create\n{}').format(
-                    traceback.format_exc()))
+                dispatch_general_alert(
+                    _('Discord API failure: create\n{}').format(traceback.format_exc())
+                )
                 return
             hint.discord_id = discord_id
             hint.save(update_fields=('discord_id',))
@@ -236,12 +272,14 @@ class DiscordInterface:
 
             embed = MessageEmbed()
             if hint.status == hint.ANSWERED:
-                embed.color = 0xaaffaa
+                embed.color = 0xAAFFAA
             elif hint.status == hint.REFUNDED:
-                embed.color = 0xcc6600
+                embed.color = 0xCC6600
             # nothing for obsolete
 
-            embed.author.name = _('{} by {}').format(hint.get_status_display(), hint.claimer)
+            embed.author.name = _('{} by {}').format(
+                hint.get_status_display(), hint.claimer
+            )
             embed.author.url = hint.full_url()
             embed.description = hint.response[:250]
             if hint.claimer in self.get_avatars():
@@ -249,10 +287,16 @@ class DiscordInterface:
             debug = _('claimed by {}').format(hint.claimer)
             try:
                 self.client.channels_messages_modify(
-                    self.HINT_CHANNEL, hint.discord_id, content=hint.short_discord_message(), embed=embed)
+                    self.HINT_CHANNEL,
+                    hint.discord_id,
+                    content=hint.short_discord_message(),
+                    embed=embed,
+                )
             except Exception:
-                dispatch_general_alert(_('Discord API failure: modify\n{}').format(
-                    traceback.format_exc()))
+                dispatch_general_alert(
+                    _('Discord API failure: modify\n{}').format(traceback.format_exc())
+                )
+
 
 discord_interface = DiscordInterface()
 
@@ -273,16 +317,19 @@ class IndividualWebsocketConsumer(WebsocketConsumer):
     # def receive(self, text_data):
     # def send(self, text_data):
 
+
 # A WebsocketConsumer subclass that can broadcast messages to a set of users.
 class BroadcastWebsocketConsumer(WebsocketConsumer):
     def connect(self):
-        if not self.is_ok(): return
+        if not self.is_ok():
+            return
         self.group = self.get_group()
         async_to_sync(self.channel_layer.group_add)(self.group, self.channel_name)
         self.accept()
 
     def disconnect(self, close_code):
-        if not self.is_ok(): return
+        if not self.is_ok():
+            return
         async_to_sync(self.channel_layer.group_discard)(self.group, self.channel_name)
 
     def channel_receive_broadcast(self, event):
@@ -290,6 +337,7 @@ class BroadcastWebsocketConsumer(WebsocketConsumer):
             self.send(text_data=event['data'])
         except Exception:
             pass
+
 
 class TeamWebsocketConsumer(BroadcastWebsocketConsumer):
     group_id = None
@@ -305,10 +353,13 @@ class TeamWebsocketConsumer(BroadcastWebsocketConsumer):
     def send_to_team(cls, team, text_data):
         async_to_sync(get_channel_layer().group_send)(
             '%s-%d' % (cls.group_id, team.user_id),
-            {'type': 'channel.receive_broadcast', 'data': text_data})
+            {'type': 'channel.receive_broadcast', 'data': text_data},
+        )
+
 
 class TeamNotificationsConsumer(TeamWebsocketConsumer):
     group_id = 'team'
+
 
 class AdminWebsocketConsumer(BroadcastWebsocketConsumer):
     group_id = None
@@ -323,40 +374,50 @@ class AdminWebsocketConsumer(BroadcastWebsocketConsumer):
     @classmethod
     def send_to_all(cls, text_data):
         async_to_sync(get_channel_layer().group_send)(
-            cls.group_id,
-            {'type': 'channel.receive_broadcast', 'data': text_data})
+            cls.group_id, {'type': 'channel.receive_broadcast', 'data': text_data}
+        )
+
 
 class HintsConsumer(AdminWebsocketConsumer):
     group_id = 'hints'
 
+
 def show_unlock_notification(context, unlock):
-    data = json.dumps({
-        'title': str(unlock.puzzle),
-        'text': _('You’ve unlocked a new puzzle!'),
-        'link': reverse('puzzle', args=(unlock.puzzle.slug,)),
-    })
+    data = json.dumps(
+        {
+            'title': str(unlock.puzzle),
+            'text': _('You’ve unlocked a new puzzle!'),
+            'link': reverse('puzzle', args=(unlock.puzzle.slug,)),
+        }
+    )
     # There's an awkward edge case where the person/browser tab that actually
     # triggered the notif is navigating between pages, so they don't have a
     # websocket to send to... use messages.info to put it into the next page.
     messages.info(context.request, data)
     TeamNotificationsConsumer.send_to_team(unlock.team, data)
 
+
 def show_solve_notification(submission):
     if not submission.puzzle.is_meta:
         return
-    data = json.dumps({
-        'title': str(submission.puzzle),
-        'text': _('You’ve solved a meta!'),
-        'link': reverse('puzzle', args=(submission.puzzle.slug,)),
-    })
+    data = json.dumps(
+        {
+            'title': str(submission.puzzle),
+            'text': _('You’ve solved a meta!'),
+            'link': reverse('puzzle', args=(submission.puzzle.slug,)),
+        }
+    )
     # No need to worry here since whoever triggered this is already getting a
     # [ANSWER is correct!] notification.
     TeamNotificationsConsumer.send_to_team(submission.team, data)
 
+
 def show_hint_notification(hint):
-    data = json.dumps({
-        'title': str(hint.puzzle),
-        'text': _('Hint answered!'),
-        'link': reverse('hints', args=(hint.puzzle.slug,)),
-    })
+    data = json.dumps(
+        {
+            'title': str(hint.puzzle),
+            'text': _('Hint answered!'),
+            'link': reverse('hints', args=(hint.puzzle.slug,)),
+        }
+    )
     TeamNotificationsConsumer.send_to_team(hint.team, data)
