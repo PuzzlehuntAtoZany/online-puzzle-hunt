@@ -9,6 +9,7 @@ django-impersonate==1.7.3
 django-mathfilters==1.0.0
 django-ratelimit==3.0.1
 django-redis==5.0.0
+django-sslserver==0.22
 gevent==1.5.0
 greenlet==0.4.16
 gunicorn==20.1.0

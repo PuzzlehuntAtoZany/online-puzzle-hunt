@@ -3,7 +3,7 @@ version: "3.9"
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runsslserver --certificate cert.pem --key key.pem
     volumes:
       - .:/app
     ports:
@@ -13,6 +13,6 @@ services:
   migration:
     build: .
     image: app
-    command: python manage.py runsslserver --certificate cert.pem --key key.pem
+    command: python manage.py migrate
     volumes:
       - .:/app
