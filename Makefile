@@ -93,7 +93,7 @@ local-ssl:
 
 # run locally with ssl
 run-local:
-	python manage.py runsslserver --certificate cert.pem --key key.pem
+	python manage.py runserver 0.0.0.0:8000
 
 # output versions of all tools
 versions:

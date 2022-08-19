@@ -21,8 +21,7 @@ We will try to respond to emails or pull requests when we can, but this isn't gu
 - Install the required packages: `pip install -r requirements.txt`
   - Are you getting `fatal error: Python.h: No such file or directory`? Try installing `python-dev` libraries first (e.g. `sudo apt-get install python3-dev`).
 - Be sure to create a `secrets.json` file with a secret key
-- Start the development server with `./manage.py runsslserver --certificate cert.pem --key key.pem`
-  - If you do not have a `cert.pem` or `key.pem`, you can create them by following [this guide](guides/LocalSSL.md)
+- Start the development server with `./manage.py runserver`
   - If you get a warning (red text) about making migrations, stop the server, run `./manage.py migrate`, then start it again.
   - If all went well, the dev server should start, printing its local URL to stdout.
 
