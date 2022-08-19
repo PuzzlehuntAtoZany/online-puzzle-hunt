@@ -13,6 +13,6 @@ services:
   migration:
     build: .
     image: app
-    command: python manage.py migrate
+    command: python manage.py runsslserver --certificate cert.pem --key key.pem
     volumes:
       - .:/app
